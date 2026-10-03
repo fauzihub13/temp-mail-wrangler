@@ -26,8 +26,10 @@ function getDomains(env: ApiEnv): string[] {
     .filter(Boolean);
 }
 
-function defaultDomain(env: ApiEnv): string {
-  return getDomains(env)[0] || "example.com";
+function randomDomain(env: ApiEnv): string {
+  const domains = getDomains(env);
+  if (!domains.length) return "example.com";
+  return domains[Math.floor(Math.random() * domains.length)];
 }
 
 function sessionId(c: any): string | null {
@@ -83,10 +85,6 @@ api.post("/inboxes", async (c) => {
   const body = await c.req.json().catch(() => ({}));
   const domains = getDomains(c.env);
   const requestedDomain: string = (body.domain || "").trim().toLowerCase();
-  const domain =
-    requestedDomain && domains.includes(requestedDomain)
-      ? requestedDomain
-      : defaultDomain(c.env);
 
   // Validate: reject unknown domains
   if (requestedDomain && !domains.includes(requestedDomain)) {
@@ -97,6 +95,9 @@ api.post("/inboxes", async (c) => {
       400,
     );
   }
+
+  // Explicit domain wins; otherwise pick a random one from the allowed list
+  const domain = requestedDomain || randomDomain(c.env);
 
   const requested: string = (body.localPart || "").trim().toLowerCase();
 

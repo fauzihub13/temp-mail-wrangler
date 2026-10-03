@@ -127,7 +127,7 @@ Creates a new inbox (or claims an existing one) and links it to your session.
 | Field       | Required | Description                                                                                                                                                                   |
 | ----------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `localPart` | No       | Custom username (e.g. `"myname"`). Omit for a random address.                                                                                                                 |
-| `domain`    | No       | Domain override. Must be one of the allowed domains from `GET /api/config`'s `mailDomains`. Defaults to the first configured domain. Invalid domains are rejected with `400`. |
+| `domain`    | No       | Domain override. Must be one of the allowed domains from `GET /api/config`'s `mailDomains`. If omitted, a domain is picked **at random** from the configured list. Invalid domains are rejected with `400`. |
 
 **Examples**
 

@@ -148,7 +148,7 @@
                 <thead><tr><th>Body field</th><th>Required</th><th>Description</th></tr></thead>
                 <tbody>
                   <tr><td><code>localPart</code></td><td class="req-no">no</td><td>Custom username, e.g. <code>"myname"</code>. Empty = random.</td></tr>
-                  <tr><td><code>domain</code></td><td class="req-no">no</td><td>One of <code>mailDomains</code> from <code>/api/config</code>. Invalid → 400.</td></tr>
+                  <tr><td><code>domain</code></td><td class="req-no">no</td><td>One of <code>mailDomains</code> from <code>/api/config</code>. Omit for a random domain. Invalid → 400.</td></tr>
                 </tbody>
               </table>
               <div class="docs-sub">Response 201</div>

@@ -67,6 +67,15 @@ async function loadConfig() {
 
   const domains = appConfig.mailDomains || [appConfig.mailDomain];
   domainSelect.innerHTML = "";
+
+  // Let the user pick a specific domain, or stay on "Random" (empty value)
+  if (domains.length > 1) {
+    const randomOpt = document.createElement("option");
+    randomOpt.value = "";
+    randomOpt.textContent = "Random domain";
+    domainSelect.appendChild(randomOpt);
+  }
+
   domains.forEach((d) => {
     const opt = document.createElement("option");
     opt.value = d;

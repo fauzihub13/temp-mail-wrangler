@@ -9,7 +9,7 @@ workers_dev = false
 # Step 1: run `npx wrangler d1 create blipmail-db`
 # Step 2: copy the database_id here
 [[d1_databases]]
-binding = "blipmail_db"
+binding = "DB"
 database_name = "blipmail-db"
 database_id = "08f5c0f3-2601-456d-9a24-f4293f200f91"
 

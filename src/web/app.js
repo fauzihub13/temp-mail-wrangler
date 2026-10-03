@@ -4,6 +4,7 @@ const refreshBtn = document.getElementById("refreshBtn");
 const newBtn = document.getElementById("newBtn");
 const deleteBtn = document.getElementById("deleteBtn");
 const newBox = document.getElementById("newBox");
+const closeNewBtn = document.getElementById("closeNewBtn");
 const createCustomBtn = document.getElementById("createCustomBtn");
 const createRandomBtn = document.getElementById("createRandomBtn");
 const localPartInput = document.getElementById("localPartInput");
@@ -13,6 +14,8 @@ const messageCount = document.getElementById("messageCount");
 const messageList = document.getElementById("messageList");
 const appTitle = document.getElementById("appTitle");
 const appSubtitle = document.getElementById("appSubtitle");
+const autoRefreshBtn = document.getElementById("autoRefreshBtn");
+const autoRefreshLabel = document.getElementById("autoRefreshLabel");
 
 let appConfig = {
   appName: "BlipMail",
@@ -22,6 +25,20 @@ let appConfig = {
 
 const SESSION_KEY = "blipmail_session_id";
 let sessionId = localStorage.getItem(SESSION_KEY) || "";
+let autoRefreshTimer = null;
+
+function icon(id, className = "i") {
+  return `<svg class="${className}"><use href="#${id}"></use></svg>`;
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
 
 async function fetchJson(url, options = {}) {
   const headers = {
@@ -46,9 +63,8 @@ async function loadConfig() {
   document.title = appConfig.appName;
   appTitle.textContent = appConfig.appName;
   appSubtitle.textContent = `Disposable inbox for ${appConfig.mailDomain}`;
-  localPartInput.placeholder = `username atau kosongkan untuk random @${appConfig.mailDomain}`;
+  localPartInput.placeholder = `username (leave empty for random @${appConfig.mailDomain})`;
 
-  // Populate domain selector
   const domains = appConfig.mailDomains || [appConfig.mailDomain];
   domainSelect.innerHTML = "";
   domains.forEach((d) => {
@@ -66,6 +82,15 @@ async function ensureSession() {
   localStorage.setItem(SESSION_KEY, sessionId);
 }
 
+function renderEmpty(iconId, title, sub) {
+  messageList.innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">${icon(iconId)}</div>
+      <div class="title">${escapeHtml(title)}</div>
+      <div class="sub">${sub}</div>
+    </div>`;
+}
+
 async function loadInboxes(selectedAddress) {
   const inboxes = await fetchJson("/api/inboxes");
   inboxSelect.innerHTML = "";
@@ -73,12 +98,15 @@ async function loadInboxes(selectedAddress) {
   if (!inboxes.length) {
     const opt = document.createElement("option");
     opt.value = "";
-    opt.textContent = "Belum ada inbox";
+    opt.textContent = "No inbox yet";
     inboxSelect.appendChild(opt);
     currentInbox.textContent = "No inbox selected";
-    messageList.innerHTML =
-      '<div class="empty-state"><div class="icon">📬</div><div class="title">No inboxes yet</div><div class="sub">Click <b>New</b> to create a disposable email address.</div></div>';
-    messageCount.textContent = "0 messages";
+    messageCount.textContent = "0";
+    renderEmpty(
+      "i-inbox",
+      "No inboxes yet",
+      `Click <b>New</b> to create a disposable email address.`,
+    );
     return;
   }
 
@@ -104,32 +132,44 @@ async function loadMessages() {
   const messages = await fetchJson(
     `/api/inboxes/${encodeURIComponent(address)}/messages`,
   );
-  messageCount.textContent = `${messages.length} messages`;
+  messageCount.textContent = String(messages.length);
 
   if (!messages.length) {
-    messageList.innerHTML =
-      '<div class="empty-state"><div class="icon">✉️</div><div class="title">Inbox empty</div><div class="sub">Emails sent to this address will appear here.</div></div>';
+    renderEmpty(
+      "i-mail",
+      "Inbox empty",
+      "Emails sent to this address will appear here.",
+    );
     return;
   }
 
   messageList.innerHTML = messages
     .map(
       (msg) => `
-    <div class="message-item">
-      <div class="message-meta">From: ${msg.from_address} • ${new Date(msg.received_at).toLocaleString()}</div>
-      <strong>${msg.subject}</strong>
-      <p>${msg.body}</p>
-    </div>
+    <article class="message-item">
+      <button class="message-summary" type="button">
+        <span class="message-avatar">${icon("i-user")}</span>
+        <span class="message-summary-text">
+          <span class="message-from">${escapeHtml(msg.from_address)}</span>
+          <span class="message-subject">${escapeHtml(msg.subject || "(no subject)")}</span>
+        </span>
+        <span class="message-time">${escapeHtml(new Date(msg.received_at + "Z").toLocaleString())}</span>
+        <span class="message-toggle">${icon("i-chevron")}</span>
+      </button>
+      <div class="message-body">
+        <pre>${escapeHtml(msg.body)}</pre>
+      </div>
+    </article>
   `,
     )
     .join("");
 }
 
-function showToast(text) {
+function showToast(text, iconId = "i-check") {
   const tc = document.getElementById("toastContainer");
   const el = document.createElement("div");
   el.className = "toast";
-  el.textContent = text;
+  el.innerHTML = `${icon(iconId)}<span>${escapeHtml(text)}</span>`;
   tc.appendChild(el);
   setTimeout(() => {
     el.classList.add("fadeout");
@@ -138,14 +178,36 @@ function showToast(text) {
 }
 
 copyBtn.addEventListener("click", async () => {
-  if (!inboxSelect.value) return;
-  await navigator.clipboard.writeText(inboxSelect.value);
-  showToast("📋 Copied to clipboard");
+  if (!inboxSelect.value) {
+    showToast("No inbox to copy", "i-alert");
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(inboxSelect.value);
+  } catch {
+    const ta = document.createElement("textarea");
+    ta.value = inboxSelect.value;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    ta.remove();
+  }
+  showToast("Copied to clipboard", "i-check");
 });
 
 refreshBtn.addEventListener("click", loadMessages);
-newBtn.addEventListener("click", () => newBox.classList.toggle("hidden"));
+newBtn.addEventListener("click", () => {
+  newBox.classList.toggle("hidden");
+  if (!newBox.classList.contains("hidden")) localPartInput.focus();
+});
+closeNewBtn.addEventListener("click", () => newBox.classList.add("hidden"));
 inboxSelect.addEventListener("change", loadMessages);
+
+messageList.addEventListener("click", (e) => {
+  const summary = e.target.closest(".message-summary");
+  if (!summary) return;
+  summary.parentElement.classList.toggle("open");
+});
 
 deleteBtn.addEventListener("click", async () => {
   if (!inboxSelect.value) return;
@@ -154,33 +216,68 @@ deleteBtn.addEventListener("click", async () => {
   await fetchJson(`/api/inboxes/${encodeURIComponent(target)}`, {
     method: "DELETE",
   });
+  showToast("Inbox removed", "i-trash");
   await loadInboxes();
 });
 
 createCustomBtn.addEventListener("click", async () => {
   const localPart = localPartInput.value.trim();
   const domain = domainSelect.value;
-  const inbox = await fetchJson("/api/inboxes", {
-    method: "POST",
-    body: JSON.stringify({ localPart, domain }),
-  });
-  localPartInput.value = "";
-  await loadInboxes(inbox.address);
+  try {
+    const inbox = await fetchJson("/api/inboxes", {
+      method: "POST",
+      body: JSON.stringify({ localPart, domain }),
+    });
+    localPartInput.value = "";
+    showToast("Inbox created", "i-check");
+    await loadInboxes(inbox.address);
+    newBox.classList.add("hidden");
+  } catch (err) {
+    showToast("Failed to create inbox", "i-alert");
+    console.error(err);
+  }
 });
 
 createRandomBtn.addEventListener("click", async () => {
   const domain = domainSelect.value;
-  const inbox = await fetchJson("/api/inboxes", {
-    method: "POST",
-    body: JSON.stringify({ domain }),
-  });
-  localPartInput.value = "";
-  await loadInboxes(inbox.address);
+  try {
+    const inbox = await fetchJson("/api/inboxes", {
+      method: "POST",
+      body: JSON.stringify({ domain }),
+    });
+    localPartInput.value = "";
+    showToast("Random inbox created", "i-check");
+    await loadInboxes(inbox.address);
+    newBox.classList.add("hidden");
+  } catch (err) {
+    showToast("Failed to create inbox", "i-alert");
+    console.error(err);
+  }
+});
+
+autoRefreshBtn.addEventListener("click", () => {
+  if (autoRefreshTimer) {
+    clearInterval(autoRefreshTimer);
+    autoRefreshTimer = null;
+    autoRefreshBtn.classList.remove("active");
+    autoRefreshLabel.textContent = "Auto: off";
+    return;
+  }
+  autoRefreshTimer = setInterval(() => {
+    loadMessages().catch(() => {});
+  }, 10000);
+  autoRefreshBtn.classList.add("active");
+  autoRefreshLabel.textContent = "Auto: on";
+  showToast("Auto-refresh enabled", "i-zap");
 });
 
 Promise.all([loadConfig(), ensureSession()])
   .then(() => loadInboxes())
   .catch((err) => {
     console.error(err);
-    messageList.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><div class="title">Connection error</div><div class="sub">${err.message}</div></div>`;
+    renderEmpty(
+      "i-alert",
+      "Connection error",
+      escapeHtml(err.message),
+    );
   });

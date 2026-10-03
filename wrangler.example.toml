@@ -33,6 +33,7 @@ WEB_HOST = "blipmail.mpruy.my.id"
 # ---- Static assets (web frontend) ----
 [assets]
 directory = "./src/web"
+binding = "ASSETS"
 
 # ---- Observability ----
 [observability]

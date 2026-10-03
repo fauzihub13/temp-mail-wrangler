@@ -12,7 +12,9 @@ import { handleEmail } from "./email-handler";
  */
 
 // Combined env bindings
-export interface Env extends ApiEnv, EmailHandlerEnv {}
+export interface Env extends ApiEnv, EmailHandlerEnv {
+  ASSETS: Fetcher;
+}
 
 export default {
   /**
@@ -34,8 +36,15 @@ export default {
       return api.fetch(apiRequest, env, ctx);
     }
 
-    // Fallback: should not happen when [assets] is configured properly
-    return new Response("Not found", { status: 404 });
+    // Pretty URL for the API docs page
+    if (url.pathname === "/docs" || url.pathname === "/docs/") {
+      const docsUrl = new URL(request.url);
+      docsUrl.pathname = "/docs.html";
+      return env.ASSETS.fetch(new Request(docsUrl, request));
+    }
+
+    // Everything else falls through to static assets
+    return env.ASSETS.fetch(request);
   },
 
   /**

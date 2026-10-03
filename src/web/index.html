@@ -3,45 +3,111 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="BlipMail — free disposable temporary email inbox. No signup, no VPS, runs on the edge." />
     <title>BlipMail</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%238185f8'/%3E%3Cstop offset='100%25' style='stop-color:%236366f1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Ctext x='32' y='46' font-family='Inter,sans-serif' font-size='36' font-weight='700' fill='white' text-anchor='middle'%3ET%3C/text%3E%3C/svg%3E" />
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
+    <!-- SVG icon sprite (Lucide-style outline icons) -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none" aria-hidden="true">
+      <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></symbol>
+      <symbol id="i-inbox" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12" /><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" /></symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M8 16H3v5" /></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" x2="10" y1="11" y2="17" /><line x1="14" x2="14" y1="11" y2="17" /></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></symbol>
+      <symbol id="i-shuffle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22" /><path d="m18 2 4 4-4 4" /><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2" /><path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8" /><path d="m18 14 4 4-4 4" /></symbol>
+      <symbol id="i-sparkles" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z" /><path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" /></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></symbol>
+      <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" /></symbol>
+      <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><line x1="12" x2="12" y1="9" y2="13" /><line x1="12" x2="12.01" y1="17" y2="17" /></symbol>
+      <symbol id="i-github" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" /><path d="M9 18c-4.51 2-5-2-7-2" /></symbol>
+      <symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></symbol>
+    </svg>
+
     <div class="app">
-      <header>
-        <h1 id="appTitle">BlipMail</h1>
-        <p id="appSubtitle">Disposable inbox</p>
+      <header class="app-header">
+        <div class="brand">
+          <span class="brand-mark"><svg class="i"><use href="#i-mail" /></svg></span>
+          <div class="brand-text">
+            <h1 id="appTitle">BlipMail</h1>
+            <p id="appSubtitle">Disposable inbox</p>
+          </div>
+        </div>
+        <nav class="app-nav">
+          <a class="nav-link" href="/docs">
+            <svg class="i"><use href="#i-book" /></svg>
+            <span>API Docs</span>
+          </a>
+        </nav>
       </header>
 
-      <section class="toolbar">
-        <select id="inboxSelect"></select>
-        <button id="copyBtn">📋 Copy</button>
-        <button id="refreshBtn">🔄 Refresh</button>
-        <button id="newBtn">＋ New</button>
-        <button id="deleteBtn" class="danger">🗑 Delete</button>
+      <section class="toolbar card">
+        <label class="select-wrap">
+          <svg class="i select-icon"><use href="#i-inbox" /></svg>
+          <select id="inboxSelect" aria-label="Select inbox"></select>
+          <svg class="i select-chevron"><use href="#i-chevron" /></svg>
+        </label>
+        <div class="toolbar-actions">
+          <button id="copyBtn" class="btn" type="button">
+            <svg class="i"><use href="#i-copy" /></svg><span>Copy</span>
+          </button>
+          <button id="refreshBtn" class="btn" type="button">
+            <svg class="i"><use href="#i-refresh" /></svg><span>Refresh</span>
+          </button>
+          <button id="newBtn" class="btn primary" type="button">
+            <svg class="i"><use href="#i-plus" /></svg><span>New</span>
+          </button>
+          <button id="deleteBtn" class="btn danger" type="button">
+            <svg class="i"><use href="#i-trash" /></svg><span>Delete</span>
+          </button>
+        </div>
       </section>
 
-      <section class="new-box hidden" id="newBox">
-        <input id="localPartInput" placeholder="username atau kosongkan untuk random" />
-        <select id="domainSelect"></select>
-        <button id="createCustomBtn">✦ Create</button>
-        <button id="createRandomBtn">🎲 Random</button>
+      <section class="new-box card hidden" id="newBox">
+        <div class="new-box-head">
+          <span class="new-box-title">
+            <svg class="i"><use href="#i-sparkles" /></svg> Create a new inbox
+          </span>
+          <button class="icon-btn" id="closeNewBtn" type="button" aria-label="Close">
+            <svg class="i"><use href="#i-x" /></svg>
+          </button>
+        </div>
+        <div class="new-box-row">
+          <input id="localPartInput" type="text" autocomplete="off" spellcheck="false" placeholder="username (leave empty for random)" />
+          <select id="domainSelect" aria-label="Select domain"></select>
+        </div>
+        <div class="new-box-actions">
+          <button id="createRandomBtn" class="btn ghost" type="button">
+            <svg class="i"><use href="#i-shuffle" /></svg><span>Random</span>
+          </button>
+          <button id="createCustomBtn" class="btn success" type="button">
+            <svg class="i"><use href="#i-sparkles" /></svg><span>Create</span>
+          </button>
+        </div>
       </section>
 
-      <section class="panel">
+      <section class="panel card">
         <div class="panel-head">
-          <h2 id="currentInbox">No inbox selected</h2>
-          <span id="messageCount">0 messages</span>
+          <div class="panel-title">
+            <svg class="i"><use href="#i-mail" /></svg>
+            <h2 id="currentInbox">No inbox selected</h2>
+          </div>
+          <div class="panel-tools">
+            <button id="autoRefreshBtn" class="pill-btn" type="button" title="Auto-refresh every 10s">
+              <svg class="i"><use href="#i-zap" /></svg>
+              <span id="autoRefreshLabel">Auto: off</span>
+            </button>
+            <span id="messageCount" class="badge">0</span>
+          </div>
         </div>
         <div id="messageList" class="message-list"></div>
       </section>
-
-      <footer>
-        <a href="https://github.com/hirotomasato" target="_blank" rel="noopener">
-          Developer by <span>masantoid</span>
-        </a>
-      </footer>
     </div>
 
     <div class="toast-container" id="toastContainer"></div>

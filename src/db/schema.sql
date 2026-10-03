@@ -1,5 +1,5 @@
--- Tempik D1 Schema
--- Run: wrangler d1 execute tempik-db --file=src/db/schema.sql
+-- BlipMail D1 Schema
+-- Run: wrangler d1 execute blipmail-db --file=src/db/schema.sql
 
 CREATE TABLE IF NOT EXISTS inboxes (
   address TEXT PRIMARY KEY,

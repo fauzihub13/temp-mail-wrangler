@@ -1,6 +1,6 @@
-# Tempik API
+# BlipMail API
 
-Tempik exposes a REST API for session management, inbox operations, and message retrieval. All endpoints live under `/api/`.
+BlipMail exposes a REST API for session management, inbox operations, and message retrieval. All endpoints live under `/api/`.
 
 **Base URL:** `https://YOUR_DOMAIN/api/`
 
@@ -8,7 +8,7 @@ Tempik exposes a REST API for session management, inbox operations, and message 
 
 ## Authentication
 
-Tempik uses **anonymous session tokens** — no login required.
+BlipMail uses **anonymous session tokens** — no login required.
 
 1. Call `GET /api/session` to obtain a `sessionId`
 2. Pass `x-session-id` header on all subsequent requests
@@ -28,19 +28,19 @@ Returns the public app configuration.
 
 ```json
 {
-  "appName": "Tempik",
+  "appName": "BlipMail",
   "mailDomain": "example.com",
   "mailDomains": ["example.com", "another-domain.my.id"],
-  "webHost": "tempik.example.com"
+  "webHost": "blipmail.example.com"
 }
 ```
 
-| Field | Type | Description |
-|---|---|---|
-| `appName` | string | App display name |
-| `mailDomain` | string | Default mail domain (first in the list, for backward compat) |
-| `mailDomains` | string[] | All available mail domains |
-| `webHost` | string | Web frontend hostname |
+| Field         | Type     | Description                                                  |
+| ------------- | -------- | ------------------------------------------------------------ |
+| `appName`     | string   | App display name                                             |
+| `mailDomain`  | string   | Default mail domain (first in the list, for backward compat) |
+| `mailDomains` | string[] | All available mail domains                                   |
+| `webHost`     | string   | Web frontend hostname                                        |
 
 ---
 
@@ -50,9 +50,9 @@ Creates or retrieves an anonymous browser session. If you pass an existing `x-se
 
 **Headers**
 
-| Header | Required | Description |
-|---|---|---|
-| `x-session-id` | No | Existing session ID (UUID v4). Omit to create a new session. |
+| Header         | Required | Description                                                  |
+| -------------- | -------- | ------------------------------------------------------------ |
+| `x-session-id` | No       | Existing session ID (UUID v4). Omit to create a new session. |
 
 **Response** `200 OK`
 
@@ -81,9 +81,9 @@ Lists all inboxes linked to your session.
 
 **Headers**
 
-| Header | Required | Description |
-|---|---|---|
-| `x-session-id` | **Yes** | Session ID from `/api/session` |
+| Header         | Required | Description                    |
+| -------------- | -------- | ------------------------------ |
+| `x-session-id` | **Yes**  | Session ID from `/api/session` |
 
 **Response** `200 OK`
 
@@ -98,9 +98,9 @@ Lists all inboxes linked to your session.
 
 **Errors**
 
-| Status | Message | Meaning |
-|---|---|---|
-| `400` | `Missing x-session-id` | No session header provided |
+| Status | Message                | Meaning                    |
+| ------ | ---------------------- | -------------------------- |
+| `400`  | `Missing x-session-id` | No session header provided |
 
 **Usage**
 
@@ -117,17 +117,17 @@ Creates a new inbox (or claims an existing one) and links it to your session.
 
 **Headers**
 
-| Header | Required | Description |
-|---|---|---|
-| `x-session-id` | **Yes** | Session ID |
-| `Content-Type` | Yes | `application/json` |
+| Header         | Required | Description        |
+| -------------- | -------- | ------------------ |
+| `x-session-id` | **Yes**  | Session ID         |
+| `Content-Type` | Yes      | `application/json` |
 
 **Request Body**
 
-| Field | Required | Description |
-|---|---|---|
-| `localPart` | No | Custom username (e.g. `"myname"`). Omit for a random address. |
-| `domain` | No | Domain override. Must be one of the allowed domains from `GET /api/config`'s `mailDomains`. Defaults to the first configured domain. Invalid domains are rejected with `400`. |
+| Field       | Required | Description                                                                                                                                                                   |
+| ----------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `localPart` | No       | Custom username (e.g. `"myname"`). Omit for a random address.                                                                                                                 |
+| `domain`    | No       | Domain override. Must be one of the allowed domains from `GET /api/config`'s `mailDomains`. Defaults to the first configured domain. Invalid domains are rejected with `400`. |
 
 **Examples**
 
@@ -164,12 +164,13 @@ Creates a new inbox (or claims an existing one) and links it to your session.
 
 **Errors**
 
-| Status | Message | Meaning |
-|---|---|---|
-| `400` | `Missing x-session-id` | No session header provided |
-| `400` | `Invalid domain: ...` | Requested domain is not in the allowed list. Check `GET /config`'s `mailDomains`. |
+| Status | Message                | Meaning                                                                           |
+| ------ | ---------------------- | --------------------------------------------------------------------------------- |
+| `400`  | `Missing x-session-id` | No session header provided                                                        |
+| `400`  | `Invalid domain: ...`  | Requested domain is not in the allowed list. Check `GET /config`'s `mailDomains`. |
 
 **Notes**
+
 - If the address already exists, it simply links the existing inbox to your session
 - Random addresses are human-readable Indonesian-style (e.g. `kopihujan42`, `bulanbiru17`)
 - The generator checks the actual database for uniqueness — it never creates duplicates, even across different sessions
@@ -198,14 +199,14 @@ Removes an inbox from your session. Does **not** delete the inbox or its message
 
 **Headers**
 
-| Header | Required | Description |
-|---|---|---|
-| `x-session-id` | **Yes** | Session ID |
+| Header         | Required | Description |
+| -------------- | -------- | ----------- |
+| `x-session-id` | **Yes**  | Session ID  |
 
 **Path Parameters**
 
-| Param | Description |
-|---|---|
+| Param     | Description                                                       |
+| --------- | ----------------------------------------------------------------- |
 | `address` | Full email address, URI-encoded. Example: `test123%40example.com` |
 
 **Response** `200 OK`
@@ -216,9 +217,9 @@ Removes an inbox from your session. Does **not** delete the inbox or its message
 
 **Errors**
 
-| Status | Message | Meaning |
-|---|---|---|
-| `400` | `Missing x-session-id` | No session header |
+| Status | Message                | Meaning           |
+| ------ | ---------------------- | ----------------- |
+| `400`  | `Missing x-session-id` | No session header |
 
 **Usage**
 
@@ -235,14 +236,14 @@ Fetches all messages for a given inbox. The inbox must be linked to your session
 
 **Headers**
 
-| Header | Required | Description |
-|---|---|---|
-| `x-session-id` | **Yes** | Session ID |
+| Header         | Required | Description |
+| -------------- | -------- | ----------- |
+| `x-session-id` | **Yes**  | Session ID  |
 
 **Path Parameters**
 
-| Param | Description |
-|---|---|
+| Param     | Description                      |
+| --------- | -------------------------------- |
 | `address` | Full email address, URI-encoded. |
 
 **Response** `200 OK`
@@ -262,10 +263,10 @@ Fetches all messages for a given inbox. The inbox must be linked to your session
 
 **Errors**
 
-| Status | Message | Meaning |
-|---|---|---|
-| `400` | `Missing x-session-id` | No session header |
-| `403` | `Inbox not in this session` | The inbox exists but is not linked to your session. Use `POST /api/inboxes` with the matching `localPart` to claim it first. |
+| Status | Message                     | Meaning                                                                                                                      |
+| ------ | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `400`  | `Missing x-session-id`      | No session header                                                                                                            |
+| `403`  | `Inbox not in this session` | The inbox exists but is not linked to your session. Use `POST /api/inboxes` with the matching `localPart` to claim it first. |
 
 **Usage**
 
@@ -279,7 +280,7 @@ curl -s "https://YOUR_DOMAIN/api/inboxes/test123%40example.com/messages" \
 ## Full flow example
 
 ```bash
-DOMAIN="tempik.YOURDOMAIN.com"
+DOMAIN="blipmail.YOURDOMAIN.com"
 
 # 1. Get session
 SESSION=$(curl -s https://$DOMAIN/api/session | jq -r '.sessionId')
@@ -318,22 +319,22 @@ All error responses follow this format:
 }
 ```
 
-| Status | When |
-|---|---|
-| `400` | Missing `x-session-id` header, or invalid domain in POST `/api/inboxes` |
-| `403` | Unauthorized — inbox not linked to your session |
-| `404` | Route not found |
+| Status | When                                                                    |
+| ------ | ----------------------------------------------------------------------- |
+| `400`  | Missing `x-session-id` header, or invalid domain in POST `/api/inboxes` |
+| `403`  | Unauthorized — inbox not linked to your session                         |
+| `404`  | Route not found                                                         |
 
 ---
 
 ## Session isolation
 
-Tempik uses per-browser anonymous sessions:
+BlipMail uses per-browser anonymous sessions:
 
-| Scenario | Behavior |
-|---|---|
-| New browser | Empty inbox list |
-| After creating inbox A | Only inbox A appears in that browser |
-| Open in incognito | Empty — different session |
-| Refresh same browser | Inboxes persist (via `localStorage`) |
-| Send email to inbox A | Inbox A gets it instantly (email handler auto-creates inbox record) |
+| Scenario               | Behavior                                                            |
+| ---------------------- | ------------------------------------------------------------------- |
+| New browser            | Empty inbox list                                                    |
+| After creating inbox A | Only inbox A appears in that browser                                |
+| Open in incognito      | Empty — different session                                           |
+| Refresh same browser   | Inboxes persist (via `localStorage`)                                |
+| Send email to inbox A  | Inbox A gets it instantly (email handler auto-creates inbox record) |

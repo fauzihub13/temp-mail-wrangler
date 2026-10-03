@@ -2,7 +2,7 @@
 
 BlipMail is a **self-hosted disposable email** service that runs entirely on **Cloudflare Workers** — no VPS required. It uses Cloudflare Email Workers to receive inbound email, D1 for storage, and serves a clean web UI from the edge.
 
-> **Repo**: [github.com/hirotomasato/blipmail](https://github.com/hirotomasato/blipmail)
+> **Repo**: [github.com/fauzihub13/temp-mail-wrangler](https://github.com/fauzihub13/temp-mail-wrangler)
 
 ---
 
@@ -41,8 +41,8 @@ Before you start, you need:
 ## Step 1 — Clone & install dependencies
 
 ```bash
-git clone https://github.com/hirotomasato/blipmail.git
-cd blipmail
+git clone https://github.com/fauzihub13/temp-mail-wrangler.git
+cd temp-mail-wrangler
 npm install
 ```
 
@@ -254,10 +254,11 @@ Then send a test email — you'll see the Worker processing it in real time.
 ## Project structure
 
 ```
-blipmail/
+temp-mail-wrangler/
 ├── wrangler.toml              # Worker config, D1 binding, routes, env vars
 ├── package.json
 ├── tsconfig.json
+├── API.md                     # REST API documentation (markdown)
 ├── .gitignore
 └── src/
     ├── index.ts               # Entry point: fetch() + email() handlers
@@ -272,7 +273,8 @@ blipmail/
     └── web/
         ├── index.html         # Frontend UI
         ├── app.js             # Frontend logic (vanilla JS)
-        └── styles.css         # Dark theme styles
+        ├── styles.css         # Dark theme styles
+        └── docs.html          # API docs page served at /docs
 ```
 
 ---
@@ -335,4 +337,8 @@ MIT
 
 ---
 
-Developer by [masantoid](https://github.com/hirotomasato)
+Maintained by [fauzihub13](https://github.com/fauzihub13).
+
+---
+
+This project is a derived work / fork of [hirotomasato/tempik](https://github.com/hirotomasato/tempik). Credit and thanks to the original author. This fork adapts it to the `temp-mail-wrangler` repository and includes UI and documentation improvements.

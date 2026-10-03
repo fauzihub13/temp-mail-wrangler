@@ -11,7 +11,7 @@ workers_dev = false
 [[d1_databases]]
 binding = "DB"
 database_name = "blipmail-db"
-database_id = "08f5c0f3-2601-456d-9a24-f4293f200f91"
+database_id = ""
 
 # ---- Email Worker ----
 [email]
